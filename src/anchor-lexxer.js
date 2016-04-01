@@ -2,17 +2,19 @@ import _u from 'underscore';
 
 
 let TokenEnum = {
-    COLON   : 1,
-    VERTBAR : 2,
-    COMMA   : 3,
-    EQUALS  : 4,
-    WORD    : 5,
-    EOL     : 6
+    COLON       : 1,
+    VERTBAR     : 2,
+    COMMA       : 3,
+    EQUALS      : 4,
+    AMPERSAND   : 5, 
+    WORD        : 6,
+    EOL         : 7
 };
 
 
 let TokenNameMap = function() {
-    let tokenNames      = ['COLON', 'VERTBAR', 'COMMA', 'EQUALS', 'WORD', 'EOL'],
+    let tokenNames      = ['COLON', 'VERTBAR', 'COMMA', 'EQUALS', 
+                           'AMPERSAND',  'WORD', 'EOL'],
         sortedEnums     = _u.values(TokenEnum).sort((a, b) => a - b),
         enumNamePairs   = _u.zip(sortedEnums, tokenNames);
 
@@ -26,10 +28,6 @@ let TokenNameMap = function() {
 
 let makeToken = (type, lexeme) => {
     let token = Object.create(null);
-
-    if (TokenEnum[type] == undefined) {
-        return null;
-    } 
 
     token.type = type; 
     token.lexeme = lexeme;
@@ -93,6 +91,11 @@ class AnchorLexxer {
                 this.cursor += 1;
                 token = makeToken(TokenEnum.EQUALS, '=');
                 break;
+
+            case '&':
+                this.cursor += 1;
+                token = makeToken(TokenEnum.AMPERSAND, '&')
+                break;
             
             default:
                 throw Error('Unknown character to be lexxed'); 
@@ -107,14 +110,14 @@ export {TokenEnum, makeToken, tokenName, AnchorLexxer};
 
 
 // testing
-let input   = 'chat=profile:on:uid,green|other,yes',
-    lexxer  = new AnchorLexxer(input);
+// let input   = 'chat=profile:on:uid,green|other,yes',
+//     lexxer  = new AnchorLexxer(input);
 
-let t = lexxer.nextToken();
+// let t = lexxer.nextToken();
 
-while (t.type != TokenEnum.EOL) {
-    console.log('type is:', TokenNameMap[t.type]);
-    t = lexxer.nextToken()
-}
+// while (t.type != TokenEnum.EOL) {
+//     console.log('type is:', TokenNameMap[t.type]);
+//     t = lexxer.nextToken()
+// }
 
-console.log('type is:', TokenNameMap[t.type]);
+// console.log('type is:', TokenNameMap[t.type]);

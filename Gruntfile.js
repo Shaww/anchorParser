@@ -24,8 +24,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'src',
                     src: '**/*.js',
-                    dest: 'build/',
-                    ext: 'es5.js'
+                    dest: 'build/'
                 }] 
             }
         },
