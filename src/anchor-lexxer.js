@@ -1,3 +1,6 @@
+import _u from 'underscore';
+
+
 let TokenEnum = {
     COLON   : 1,
     VERTBAR : 2,
@@ -7,6 +10,21 @@ let TokenEnum = {
     EOL     : 6
 };
 
+
+let TokenNameMap = function() {
+    let tokenNames      = ['COLON', 'VERTBAR', 'COMMA', 'EQUALS', 'WORD', 'EOL'],
+        sortedEnumKeys  = _u.keys(TokenEnum).sort((a, b) => {
+            return TokenEnum[a] - TokenEnum[b];
+        }),
+        enumNamePairs   = _u.zip(sortedEnumKeys, tokenNames);
+
+    return _u.reduceRight(enumNamePairs, (memo, [enumType, enumName]) => {
+        memo[enumType] = enumName;
+
+        return memo;
+    }, {});
+}();
+    
 
 let makeToken = (type, lexeme) => {
     let token = Object.create(null);
@@ -24,71 +42,63 @@ class AnchorLexxer {
         this.len        = urlFragment.length;
         this.cursor     = 0;
         this.char       = undefined;
-
-        this.char       = urlFragment[this.cursor];
     }
 
     nextToken() {
-        let isAlpha = /[a-zA-Z]/,
-            word    = /[a-zA-Z0-9]*/;
+        let lookAhead,
+            token,
+            isAlpha     = /[a-zA-Z]/,
+            wordRegex   = /[a-zA-Z0-9]*/;
+
+        lookAhead = this.char = this.fragment[this.cursor];
 
         if (this.cursor >= this.len) { 
             return makeToken(TokenEnum.EOL, '\0'); 
         }
 
-        if (isAlpha.test(this.char)) {
+        if (isAlpha.test(lookAhead)) {
             let token, 
                 search  = this.fragment.slice(this.cursor),
-                matched = word.exec(search),
+                matched = wordRegex.exec(search),
                 found   = matched[0];
 
             token = makeToken(TokenEnum.WORD, found);
             this.cursor = this.cursor + found.length;
-            this.char = this.fragment[this.cursor];
 
             return token;
 
-        } else if (this.char === ':') {
-            let token;
+        } else switch(lookAhead) {
+            case ':':
+                this.cursor += 1;
+                token = makeToken(TokenEnum.COLON, ':');
+                break;
 
-            this.cursor += 1; 
-            this.char = this.fragment[this.cursor];
-            token = makeToken(TokenEnum.COLON, ':');
+            case ',': 
+                this.cursor += 1;
+                token = makeToken(TokenEnum.COMMA, ',');
+                break;
 
-            return token;
-        } else if (this.char === ',' ) {
-            let token;
+            case '|':
+                this.cursor += 1;
+                token = makeToken(TokenEnum.VERTBAR, '|');
+                break;
 
-            this.cursor += 1; 
-            this.char = this.fragment[this.cursor];
-            token = makeToken(TokenEnum.COMMA, ',');
-
-            return token;
-        } else if (this.char === '|') {
-            let token;
-
-            this.cursor += 1; 
-            this.char = this.fragment[this.cursor];
-            token = makeToken(TokenEnum.VERTBAR, '|');
-
-            return token;
-        } else if (this.char === '=') {
-            let token;
-
-            this.cursor += 1; 
-            this.char = this.fragment[this.cursor];
-            token = makeToken(TokenEnum.EQUALS, '=');
-
-            return token;
-        } else {
-            throw Error('Unknown character to be lexxed'); 
+            case '=':
+                this.cursor += 1;
+                token = makeToken(TokenEnum.EQUALS, '=');
+                break;
+            
+            default:
+                throw Error('Unknown character to be lexxed'); 
         }
+
+        return token;
     }
 }
 
 
 // testing
-let input   = 'chat=profile:on:uid,green',
+let input   = 'chat=profile:on:uid,green|other,yes',
     lexxer  = new AnchorLexxer(input);
 
 let t = lexxer.nextToken();
@@ -98,3 +108,8 @@ while (t.type != TokenEnum.EOL) {
     console.log('value is:', t.lexeme);
     t = lexxer.nextToken()
 }
+
+console.log('type is:', t.type);
+console.log('value is:', t.lexeme);
+
+console.log('token name map is:', TokenNameMap);

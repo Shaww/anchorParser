@@ -27,6 +27,7 @@
     "gruntify-eslint": "^2.0.0"
   },
   "dependencies": {
-    "babel-plugin-transform-runtime": "^6.6.0"
+    "babel-plugin-transform-runtime": "^6.6.0",
+    "underscore": "^1.8.3"
   }
 }
