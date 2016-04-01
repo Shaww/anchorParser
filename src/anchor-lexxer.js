@@ -44,6 +44,7 @@ class AnchorLexxer {
 
             token = makeToken(TokenEnum.WORD, found);
             this.cursor = this.cursor + found.length;
+            this.char = this.fragment[this.cursor];
 
             return token;
 
@@ -51,6 +52,7 @@ class AnchorLexxer {
             let token;
 
             this.cursor += 1; 
+            this.char = this.fragment[this.cursor];
             token = makeToken(TokenEnum.COLON, ':');
 
             return token;
@@ -58,9 +60,28 @@ class AnchorLexxer {
             let token;
 
             this.cursor += 1; 
+            this.char = this.fragment[this.cursor];
             token = makeToken(TokenEnum.COMMA, ',');
 
             return token;
+        } else if (this.char === '|') {
+            let token;
+
+            this.cursor += 1; 
+            this.char = this.fragment[this.cursor];
+            token = makeToken(TokenEnum.VERTBAR, '|');
+
+            return token;
+        } else if (this.char === '=') {
+            let token;
+
+            this.cursor += 1; 
+            this.char = this.fragment[this.cursor];
+            token = makeToken(TokenEnum.EQUALS, '=');
+
+            return token;
+        } else {
+            throw Error('Unknown character to be lexxed'); 
         }
     }
 }
@@ -68,7 +89,12 @@ class AnchorLexxer {
 
 // testing
 let input   = 'chat=profile:on:uid,green',
-    lexxer  = new AnchorLexxer(input),
-    t       = lexxer.nextToken(); 
+    lexxer  = new AnchorLexxer(input);
 
-console.log('t is:', t);
+let t = lexxer.nextToken();
+
+while (t.type != TokenEnum.EOL) {
+    console.log('type is:', t.type);
+    console.log('value is:', t.lexeme);
+    t = lexxer.nextToken()
+}
