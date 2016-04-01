@@ -13,10 +13,8 @@ let TokenEnum = {
 
 let TokenNameMap = function() {
     let tokenNames      = ['COLON', 'VERTBAR', 'COMMA', 'EQUALS', 'WORD', 'EOL'],
-        sortedEnumKeys  = _u.keys(TokenEnum).sort((a, b) => {
-            return TokenEnum[a] - TokenEnum[b];
-        }),
-        enumNamePairs   = _u.zip(sortedEnumKeys, tokenNames);
+        sortedEnums     = _u.values(TokenEnum).sort((a, b) => a - b),
+        enumNamePairs   = _u.zip(sortedEnums, tokenNames);
 
     return _u.reduceRight(enumNamePairs, (memo, [enumType, enumName]) => {
         memo[enumType] = enumName;
@@ -33,7 +31,7 @@ let makeToken = (type, lexeme) => {
     token.lexeme = lexeme;
 
     return token
-}
+};
 
 
 class AnchorLexxer {
@@ -104,12 +102,8 @@ let input   = 'chat=profile:on:uid,green|other,yes',
 let t = lexxer.nextToken();
 
 while (t.type != TokenEnum.EOL) {
-    console.log('type is:', t.type);
-    console.log('value is:', t.lexeme);
+    console.log('type is:', TokenNameMap[t.type]);
     t = lexxer.nextToken()
 }
 
-console.log('type is:', t.type);
-console.log('value is:', t.lexeme);
-
-console.log('token name map is:', TokenNameMap);
+console.log('type is:', TokenNameMap[t.type]);
