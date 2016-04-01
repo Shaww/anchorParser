@@ -20,12 +20,16 @@ let TokenNameMap = function() {
         memo[enumType] = enumName;
 
         return memo;
-    }, {});
+    }, Object.create(null));
 }();
     
 
 let makeToken = (type, lexeme) => {
     let token = Object.create(null);
+
+    if (TokenEnum[type] == undefined) {
+        return null;
+    } 
 
     token.type = type; 
     token.lexeme = lexeme;
@@ -34,10 +38,17 @@ let makeToken = (type, lexeme) => {
 };
 
 
+let tokenName = (tokenType) => {
+    let name =TokenNameMap[tokenType];
+
+    return (name == undefined) ? null : name;
+}
+
+
 class AnchorLexxer {
-    constructor(urlFragment) {
-        this.fragment   = urlFragment; 
-        this.len        = urlFragment.length;
+    constructor(hashFragment) {
+        this.fragment   = hashFragment; 
+        this.len        = hashFragment.length;
         this.cursor     = 0;
         this.char       = undefined;
     }
@@ -45,7 +56,7 @@ class AnchorLexxer {
     nextToken() {
         let lookAhead,
             token,
-            isAlpha     = /[a-zA-Z]/,
+            isAlphaNum  = /[a-zA-Z0-9]/,
             wordRegex   = /[a-zA-Z0-9]*/;
 
         lookAhead = this.char = this.fragment[this.cursor];
@@ -54,16 +65,13 @@ class AnchorLexxer {
             return makeToken(TokenEnum.EOL, '\0'); 
         }
 
-        if (isAlpha.test(lookAhead)) {
-            let token, 
-                search  = this.fragment.slice(this.cursor),
+        if (isAlphaNum.test(lookAhead)) {
+            let search  = this.fragment.slice(this.cursor),
                 matched = wordRegex.exec(search),
                 found   = matched[0];
 
-            token = makeToken(TokenEnum.WORD, found);
             this.cursor = this.cursor + found.length;
-
-            return token;
+            token = makeToken(TokenEnum.WORD, found);
 
         } else switch(lookAhead) {
             case ':':
@@ -93,6 +101,9 @@ class AnchorLexxer {
         return token;
     }
 }
+
+
+export {TokenEnum, makeToken, tokenName, AnchorLexxer};
 
 
 // testing
