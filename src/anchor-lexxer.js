@@ -37,7 +37,7 @@ let makeToken = (type, lexeme) => {
 
 
 let tokenName = (tokenType) => {
-    let name =TokenNameMap[tokenType];
+    let name = TokenNameMap[tokenType];
 
     return (name == undefined) ? null : name;
 }
@@ -121,3 +121,4 @@ export {TokenEnum, makeToken, tokenName, AnchorLexxer};
 // }
 
 // console.log('type is:', TokenNameMap[t.type]);
+// console.log('name of type `COLON` is:', tokenName(TokenEnum.COLON));
