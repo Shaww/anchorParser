@@ -1,30 +1,53 @@
 import _u from 'underscore';
 
 
-let TokenEnum = {
-    COLON       : 1,
-    VERTBAR     : 2,
-    COMMA       : 3,
-    EQUALS      : 4,
-    AMPERSAND   : 5, 
-    WORD        : 6,
-    EOL         : 7
-};
+const COLON       = Symbol('Colon Token');
+const VERTBAR     = Symbol('Vertical Bar Token');
+const COMMA       = Symbol('Comma');
+const EQUALS      = Symbol('Equals Token');
+const AMPERSAND   = Symbol('Ampersands Token');
+const WORD        = Symbol('Word Token');
+const EOL         = Symbol('Terminating Token');
+
+
+const tokenSymbols = [COLON, VERTBAR, COMMA, EQUALS, AMPERSAND, WORD, EOL];
+const tokenNames   = ['COLON', 'VERTBAR', 'COMMA', 'EQUALS', 'AMPERSAND',  
+                        'WORD', 'EOL'];
+
+
+let toList = (iterable) => {
+    let list = [];
+
+    for (let next of iterable) {
+        list.push(next); 
+    }
+
+    return list;
+}
+
+// let TokenEnum = {
+//     COLON       : 1,
+//     VERTBAR     : 2,
+//     COMMA       : 3,
+//     EQUALS      : 4,
+//     AMPERSAND   : 5, 
+//     WORD        : 6,
+//     EOL         : 7
+// };
+let TokenEnum = function() {
+    let enumPairs = _u.zip(tokenNames, tokenSymbols);
+
+    return new Map(enumPairs);
+}();
 
 
 let TokenNameMap = function() {
-    let tokenNames      = ['COLON', 'VERTBAR', 'COMMA', 'EQUALS', 
-                           'AMPERSAND',  'WORD', 'EOL'],
-        sortedEnums     = _u.values(TokenEnum).sort((a, b) => a - b),
-        enumNamePairs   = _u.zip(sortedEnums, tokenNames);
+    let enumValues      = toList( TokenEnum.values() ),
+        enumNamePairs   = _u.zip(enumValues, tokenNames);
 
-    return _u.reduceRight(enumNamePairs, (memo, [enumType, enumName]) => {
-        memo[enumType] = enumName;
-
-        return memo;
-    }, Object.create(null));
+    return new Map(enumNamePairs);
 }();
-    
+
 
 let makeToken = (type, lexeme) => {
     let token = Object.create(null);
@@ -32,12 +55,12 @@ let makeToken = (type, lexeme) => {
     token.type = type; 
     token.lexeme = lexeme;
 
-    return token
+    return token;
 };
 
 
 let tokenName = (tokenType) => {
-    let name = TokenNameMap[tokenType];
+    let name = TokenNameMap.get(tokenType);
 
     return (name == undefined) ? null : name;
 }
@@ -51,6 +74,10 @@ class AnchorLexxer {
         this.char       = undefined;
     }
 
+    consume() {
+        this.cursor += 1; 
+    }
+
     nextToken() {
         let lookAhead,
             token,
@@ -60,7 +87,7 @@ class AnchorLexxer {
         lookAhead = this.char = this.fragment[this.cursor];
 
         if (this.cursor >= this.len) { 
-            return makeToken(TokenEnum.EOL, '\0'); 
+            return makeToken(TokenEnum.get('EOL'), '\0'); 
         }
 
         if (isAlphaNum.test(lookAhead)) {
@@ -69,32 +96,32 @@ class AnchorLexxer {
                 found   = matched[0];
 
             this.cursor = this.cursor + found.length;
-            token = makeToken(TokenEnum.WORD, found);
+            token = makeToken(TokenEnum.get('WORD'), found);
 
         } else switch(lookAhead) {
             case ':':
-                this.cursor += 1;
-                token = makeToken(TokenEnum.COLON, ':');
+                this.consume();
+                token = makeToken(TokenEnum.get('COLON'), ':');
                 break;
 
             case ',': 
-                this.cursor += 1;
-                token = makeToken(TokenEnum.COMMA, ',');
+                this.consume();
+                token = makeToken(TokenEnum.get('COMMA'), ',');
                 break;
 
             case '|':
-                this.cursor += 1;
-                token = makeToken(TokenEnum.VERTBAR, '|');
+                this.consume();
+                token = makeToken(TokenEnum.get('VERTBAR'), '|');
                 break;
 
             case '=':
-                this.cursor += 1;
-                token = makeToken(TokenEnum.EQUALS, '=');
+                this.consume();
+                token = makeToken(TokenEnum.get('EQUALS'), '=');
                 break;
 
             case '&':
-                this.cursor += 1;
-                token = makeToken(TokenEnum.AMPERSAND, '&')
+                this.consume();
+                token = makeToken(TokenEnum.get('AMPERSAND'), '&')
                 break;
             
             default:
@@ -115,8 +142,9 @@ export {TokenEnum, makeToken, tokenName, AnchorLexxer};
 
 // let t = lexxer.nextToken();
 
-// while (t.type != TokenEnum.EOL) {
-//     console.log('type is:', TokenNameMap[t.type]);
+
+// while (t.type !== TokenEnum.get('EOL')) {
+//     console.log('type is:', TokenNameMap.get(t.type));
 //     t = lexxer.nextToken()
 // }
 
