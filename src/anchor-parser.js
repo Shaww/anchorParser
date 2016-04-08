@@ -1,4 +1,4 @@
-import {AnchorLexxer, TokenEnum, tokenName} from './anchor-lexxer';
+import {AnchorLexxer, tokenType, tokenName} from './anchor-lexxer';
 
 
 class AST {
@@ -36,6 +36,7 @@ class AnchorParser {
         if (this.lookaheadToken.type === expectedType) {
             let node = new AST(this.lookaheadToken);
 
+            // advance to next token
             this.lookaheadToken = this.source.nextToken(); 
 
             return node;
@@ -62,7 +63,7 @@ class AnchorParser {
         let ast;
 
         ast = this.fragments();
-        this.match(TokenEnum.EOL);
+        this.match( tokenType('EOL') );
 
         this.ast = ast;
         return ast;
@@ -73,10 +74,10 @@ class AnchorParser {
 
         singleContext = this.fragment();
         
-        while (this.check(TokenEnum.AMPERSAND)) {
+        while (this.check( tokenType('AMPERSAND') )) {
             let ampersandNode, additionalContextSubtree;
 
-            ampersandNode               = this.match(TokenEnum.AMPERSAND);
+            ampersandNode               = this.match( tokenType('AMPERSAND') );
             additionalContextSubtree    = this.fragments();
 
             ampersandNode.addChild(singleContext);
@@ -91,17 +92,17 @@ class AnchorParser {
     fragment() {
         let assignNode, leftOperand, rightOperand;
 
-        leftOperand     = this.match(TokenEnum.WORD); 
-        assignNode      = this.match(TokenEnum.EQUALS); 
-        rightOperand    = this.match(TokenEnum.WORD); 
+        leftOperand     = this.match( tokenType('WORD') ); 
+        assignNode      = this.match( tokenType('EQUALS') ); 
+        rightOperand    = this.match( tokenType('WORD') ); 
 
         assignNode.addChild(leftOperand);
         assignNode.addChild(rightOperand)
 
-        if  (this.check(TokenEnum.COLON)) {
+        if  (this.check( tokenType('COLON') )) {
             let colonNode, dependentSubtree;
 
-            colonNode           = this.match(TokenEnum.COLON);
+            colonNode           = this.match( tokenType('COLON') );
             dependentSubtree    = this.dependentParts();
 
             colonNode.addChild(assignNode);
@@ -120,17 +121,17 @@ class AnchorParser {
     dependentParts() {
         let keyNode, valueNode, commaNode;
 
-        keyNode     = this.match(TokenEnum.WORD); 
-        commaNode   = this.match(TokenEnum.COMMA); 
-        valueNode   = this.match(TokenEnum.WORD); 
+        keyNode     = this.match( tokenType('WORD') ); 
+        commaNode   = this.match( tokenType('COMMA') ); 
+        valueNode   = this.match( tokenType('WORD') ); 
 
         commaNode.addChild(keyNode);
         commaNode.addChild(valueNode);
 
-        while (this.check(TokenEnum.VERTBAR)) {
+        while (this.check( tokenType('VERTBAR') )) {
             let verticalbarNode, dependentSubtree;
 
-            verticalbarNode     = this.match(TokenEnum.VERTBAR);
+            verticalbarNode     = this.match( tokenType('VERTBAR') );
             dependentSubtree    = this.dependentParts();
 
             verticalbarNode.addChild(commanNode);

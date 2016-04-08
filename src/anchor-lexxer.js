@@ -59,10 +59,17 @@ let makeToken = (type, lexeme) => {
 };
 
 
+let tokenType = (tokenId) => {
+    let type = TokenEnum.get(tokenId);
+
+    return (type === undefined) ? null : type;
+}
+
+
 let tokenName = (tokenType) => {
     let name = TokenNameMap.get(tokenType);
 
-    return (name == undefined) ? null : name;
+    return (name === undefined) ? null : name;
 }
 
 
@@ -133,7 +140,7 @@ class AnchorLexxer {
 }
 
 
-export {TokenEnum, makeToken, tokenName, AnchorLexxer};
+export {TokenEnum, makeToken, tokenType, tokenName, AnchorLexxer};
 
 
 // testing
