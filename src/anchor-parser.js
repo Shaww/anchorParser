@@ -1,3 +1,4 @@
+import * as TokenTypes from './anchor-token-types';
 import {AnchorLexxer, tokenType, tokenName} from './anchor-lexxer';
 
 
@@ -63,7 +64,7 @@ class AnchorParser {
         let ast;
 
         ast = this.fragments();
-        this.match( tokenType('EOL') );
+        this.match( TokenTypes.EOL );
 
         this.ast = ast;
         return ast;
@@ -74,10 +75,10 @@ class AnchorParser {
 
         singleContext = this.fragment();
         
-        while (this.check( tokenType('AMPERSAND') )) {
+        while (this.check( TokenTypes.AMPERSAND )) {
             let ampersandNode, additionalContextSubtree;
 
-            ampersandNode               = this.match( tokenType('AMPERSAND') );
+            ampersandNode               = this.match( TokenTypes.AMPERSAND );
             additionalContextSubtree    = this.fragments();
 
             ampersandNode.addChild(singleContext);
@@ -92,17 +93,17 @@ class AnchorParser {
     fragment() {
         let assignNode, leftOperand, rightOperand;
 
-        leftOperand     = this.match( tokenType('WORD') ); 
-        assignNode      = this.match( tokenType('EQUALS') ); 
-        rightOperand    = this.match( tokenType('WORD') ); 
+        leftOperand     = this.match( TokenTypes.WORD ); 
+        assignNode      = this.match( TokenTypes.EQUALS ); 
+        rightOperand    = this.match( TokenTypes.WORD ); 
 
         assignNode.addChild(leftOperand);
         assignNode.addChild(rightOperand)
 
-        if  (this.check( tokenType('COLON') )) {
+        if  (this.check( TokenTypes.COLON )) {
             let colonNode, dependentSubtree;
 
-            colonNode           = this.match( tokenType('COLON') );
+            colonNode           = this.match( TokenTypes.COLON );
             dependentSubtree    = this.dependentParts();
 
             colonNode.addChild(assignNode);
@@ -121,17 +122,17 @@ class AnchorParser {
     dependentParts() {
         let keyNode, valueNode, commaNode;
 
-        keyNode     = this.match( tokenType('WORD') ); 
-        commaNode   = this.match( tokenType('COMMA') ); 
-        valueNode   = this.match( tokenType('WORD') ); 
+        keyNode     = this.match( TokenTypes.WORD ); 
+        commaNode   = this.match( TokenTypes.COMMA ); 
+        valueNode   = this.match( TokenTypes.WORD ); 
 
         commaNode.addChild(keyNode);
         commaNode.addChild(valueNode);
 
-        while (this.check( tokenType('VERTBAR') )) {
+        while (this.check( TokenTypes.VERTBAR )) {
             let verticalbarNode, dependentSubtree;
 
-            verticalbarNode     = this.match( tokenType('VERTBAR') );
+            verticalbarNode     = this.match( TokenTypes.VERTBAR );
             dependentSubtree    = this.dependentParts();
 
             verticalbarNode.addChild(commanNode);

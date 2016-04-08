@@ -1,18 +1,5 @@
 import _u from 'underscore';
-
-
-const COLON       = Symbol('Colon Token');
-const VERTBAR     = Symbol('Vertical Bar Token');
-const COMMA       = Symbol('Comma');
-const EQUALS      = Symbol('Equals Token');
-const AMPERSAND   = Symbol('Ampersands Token');
-const WORD        = Symbol('Word Token');
-const EOL         = Symbol('Terminating Token');
-
-
-const tokenSymbols = [COLON, VERTBAR, COMMA, EQUALS, AMPERSAND, WORD, EOL];
-const tokenNames   = ['COLON', 'VERTBAR', 'COMMA', 'EQUALS', 'AMPERSAND',  
-                        'WORD', 'EOL'];
+import * as TokenTypes from './anchor-token-types';
 
 
 let toList = (iterable) => {
@@ -34,15 +21,19 @@ let toList = (iterable) => {
 //     WORD        : 6,
 //     EOL         : 7
 // };
-let TokenEnum = function() {
-    let enumPairs = _u.zip(tokenNames, tokenSymbols);
+let TokenEnumMap = function() {
+    let tokenNames      = TokenTypes.tokenNames, 
+        tokenSymbols    = TokenTypes.tokenSymbols,
+        enumPairs       = _u.zip(tokenNames, tokenSymbols);
 
     return new Map(enumPairs);
 }();
 
 
 let TokenNameMap = function() {
-    let enumValues      = toList( TokenEnum.values() ),
+    let tokenNames      = TokenTypes.tokenNames, 
+        tokenSymbols    = TokenTypes.tokenSymbols,
+        enumValues      = toList( TokenEnumMap.values() ),
         enumNamePairs   = _u.zip(enumValues, tokenNames);
 
     return new Map(enumNamePairs);
@@ -60,7 +51,7 @@ let makeToken = (type, lexeme) => {
 
 
 let tokenType = (tokenId) => {
-    let type = TokenEnum.get(tokenId);
+    let type = TokenEnumMap.get(tokenId);
 
     return (type === undefined) ? null : type;
 }
@@ -94,7 +85,7 @@ class AnchorLexxer {
         lookAhead = this.char = this.fragment[this.cursor];
 
         if (this.cursor >= this.len) { 
-            return makeToken(TokenEnum.get('EOL'), '\0'); 
+            return makeToken(TokenTypes.EOL, '\0'); 
         }
 
         if (isAlphaNum.test(lookAhead)) {
@@ -103,32 +94,32 @@ class AnchorLexxer {
                 found   = matched[0];
 
             this.cursor = this.cursor + found.length;
-            token = makeToken(TokenEnum.get('WORD'), found);
+            token = makeToken(TokenTypes.WORD, found);
 
         } else switch(lookAhead) {
             case ':':
                 this.consume();
-                token = makeToken(TokenEnum.get('COLON'), ':');
+                token = makeToken(TokenTypes.COLON, ':');
                 break;
 
             case ',': 
                 this.consume();
-                token = makeToken(TokenEnum.get('COMMA'), ',');
+                token = makeToken(TokenTypes.COMMA, ':');
                 break;
 
             case '|':
                 this.consume();
-                token = makeToken(TokenEnum.get('VERTBAR'), '|');
+                token = makeToken(TokenTypes.VERTBAR, ':');
                 break;
 
             case '=':
                 this.consume();
-                token = makeToken(TokenEnum.get('EQUALS'), '=');
+                token = makeToken(TokenTypes.EQUALS, ':');
                 break;
 
             case '&':
                 this.consume();
-                token = makeToken(TokenEnum.get('AMPERSAND'), '&')
+                token = makeToken(TokenTypes.AMPERSAND, ':');
                 break;
             
             default:
@@ -140,20 +131,19 @@ class AnchorLexxer {
 }
 
 
-export {TokenEnum, makeToken, tokenType, tokenName, AnchorLexxer};
+export {makeToken, tokenType, tokenName, AnchorLexxer};
 
 
 // testing
-// let input   = 'chat=profile:on:uid,green|other,yes',
-//     lexxer  = new AnchorLexxer(input);
+let input   = 'chat=profile:on:uid,green|other,yes',
+    lexxer  = new AnchorLexxer(input);
 
-// let t = lexxer.nextToken();
+let t = lexxer.nextToken();
 
-
-// while (t.type !== TokenEnum.get('EOL')) {
-//     console.log('type is:', TokenNameMap.get(t.type));
-//     t = lexxer.nextToken()
-// }
+while (t.type !== TokenTypes.EOL) {
+    console.log('type is:', TokenNameMap.get(t.type));
+    t = lexxer.nextToken()
+}
 
 // console.log('type is:', TokenNameMap[t.type]);
 // console.log('name of type `COLON` is:', tokenName(TokenEnum.COLON));
