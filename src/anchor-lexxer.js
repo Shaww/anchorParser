@@ -104,22 +104,22 @@ class AnchorLexxer {
 
             case ',': 
                 this.consume();
-                token = makeToken(TokenTypes.COMMA, ':');
+                token = makeToken(TokenTypes.COMMA, ',');
                 break;
 
             case '|':
                 this.consume();
-                token = makeToken(TokenTypes.VERTBAR, ':');
+                token = makeToken(TokenTypes.VERTBAR, '|');
                 break;
 
             case '=':
                 this.consume();
-                token = makeToken(TokenTypes.EQUALS, ':');
+                token = makeToken(TokenTypes.EQUALS, '=');
                 break;
 
             case '&':
                 this.consume();
-                token = makeToken(TokenTypes.AMPERSAND, ':');
+                token = makeToken(TokenTypes.AMPERSAND, '&');
                 break;
             
             default:
@@ -131,19 +131,19 @@ class AnchorLexxer {
 }
 
 
-export {makeToken, tokenType, tokenName, AnchorLexxer};
+export {TokenEnumMap, TokenNameMap, makeToken, tokenType, tokenName, AnchorLexxer};
 
 
 // testing
-let input   = 'chat=profile:on:uid,green|other,yes',
-    lexxer  = new AnchorLexxer(input);
+// let input   = 'chat=profile:on:uid,green|other,yes',
+//     lexxer  = new AnchorLexxer(input);
 
-let t = lexxer.nextToken();
+// let t = lexxer.nextToken();
 
-while (t.type !== TokenTypes.EOL) {
-    console.log('type is:', TokenNameMap.get(t.type));
-    t = lexxer.nextToken()
-}
+// while (t.type !== TokenTypes.EOL) {
+//     console.log('type is:', TokenNameMap.get(t.type));
+//     t = lexxer.nextToken()
+// }
 
 // console.log('type is:', TokenNameMap[t.type]);
 // console.log('name of type `COLON` is:', tokenName(TokenEnum.COLON));
