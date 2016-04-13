@@ -26,11 +26,11 @@ Example of anchor fragment:
 
 The following is the grammar. It can be parsed using an LL(1) parser.
 
-<fragments`>        := <fragments><EOL>
-<fragments>         := <fragment> | <fragment> '&' <fragments> 
-<fragment>          := <independentPart> | <independentPart> ':' <dependentParts>
-<independentPart>   := <literal> '=' <literal>
-<dependentParts>    := <dependentPair> | <dependentPair> '|' <dependentParts>
-<dependentPair>     := <literal> ',' <literal>
-<literal>           := [a-zA-Z0-9]+
-<EOL>               := '\0'
+    <fragments`>        := <fragments><EOL>
+    <fragments>         := <fragment> | <fragment> '&' <fragments> 
+    <fragment>          := <independentPart> | <independentPart> ':' <dependentParts>
+    <independentPart>   := <literal> '=' <literal>
+    <dependentParts>    := <dependentPair> | <dependentPair> '|' <dependentParts>
+    <dependentPair>     := <literal> ',' <literal>
+    <literal>           := [a-zA-Z0-9]+
+    <EOL>               := '\0'
