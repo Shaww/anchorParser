@@ -1,9 +1,8 @@
-# our transpiled files
+<<<<<<< HEAD
+node_modules/
 build/
-
-# temp. store
 temp/
-
+=======
 # Logs
 logs
 *.log
@@ -37,3 +36,4 @@ node_modules
 
 # Optional REPL history
 .node_repl_history
+>>>>>>> f8bde1090aaa5b800911255f4691dd84643e64f8
