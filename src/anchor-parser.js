@@ -1,147 +1,8 @@
-import _u from 'underscore';
 import * as TokenTypes from './anchor-token-types';
-import {AnchorLexxer, tokenType, tokenName} from './anchor-lexxer';
+import {AnchorLexxer} from './anchor-lexxer';
 
 
-let merge = (o1, o2) => {
-    let merged = Object.create(null);
-
-    _u.extend(merged, o1, o2);
-
-    return merged;
-};
-
-
-class MapBuilderWalker {
-    constructor(root) {
-        this.root = root; 
-        this.map  = Object.create(null);
-    }  
-
-    walk() {
-        this.map = this.dispatch(this.root); 
-    }
-
-    getMap() {
-        return this.map; 
-    }
-
-    dispatch(node) {
-        let type = node.nodeType();
-
-        switch(type) {
-            case TokenTypes.AMPERSAND:
-                 return this.walk_ampersand_node(node);
-                break;
-
-            case TokenTypes.COLON:
-                 return this.walk_colon_node(node);
-                break;
-
-            case TokenTypes.VERTBAR:
-                 return this.walk_verticalBar_node(node);
-                break;
-
-            case TokenTypes.COMMA:
-                 return this.walk_comma_node(node);
-                break;
-
-            case TokenTypes.EQUALS:
-                 return this.walk_equals_node(node);
-                break;
-
-            case TokenTypes.WORD:
-                 return this.walk_word_node(node);
-                break;
-
-            default:
-                throw Error('Encountered an invalid node whilst walking the tree');
-        }
-    }
-
-
-    walk_ampersand_node(node) {
-        let type        = node.nodeType(),
-            leftTree    = node.children[0],
-            rightTree   = node.children[1],
-            mergedMappings;
-
-
-        mergedMappings = merge( this.dispatch(leftTree), 
-                                this.dispatch(rightTree) );
-
-        return mergedMappings;
-    }
-
-    walk_colon_node(node) {
-        let type            = node.nodeType(),
-            map             = Object.create(null), 
-            independentPart = node.children[0],
-            dependentPart   = node.children[1],
-            mergedMappings,
-            independentMap,
-            dependentMap,
-            dependentWrap,
-            independentMapKey,
-            dependentMapKey;
-
-        independentMap      = this.dispatch(independentPart);
-        dependentMap        = this.dispatch(dependentPart);
-        independentMapKey   = _u.keys(independentMap)[0];
-        dependentMapKey     = '_' + independentMapKey;
-        dependentWrap       = Object.create(null);
-
-        dependentWrap[dependentMapKey] = dependentMap;
-
-        mergedMappings = merge(independentMap, dependentWrap);
-
-        return mergedMappings;
-    }
-
-    walk_verticalBar_node(node) {
-        let type                    = node.nodeType(),
-            map                     = Object.create(null),
-            leftDependencies        = node.children[0],
-            rightDependencies       = node.children[1],
-            mergedMappings;
-
-        mergedMappings = merge(this.dispatch(leftDependencies), 
-                                this.dispatch(rightDependencies));
-
-        return mergedMappings;
-
-    }
-
-    walk_comma_node(node) {
-        let type = node.nodeType(),
-            map  = Object.create(null),
-            prop = node.children[0],
-            val  = node.children[1];
-
-        map[this.dispatch(prop)] = this.dispatch(val);
-
-        return map;
-    }
-
-    walk_equals_node(node) {
-        let type = node.nodeType(),
-            map  = Object.create(null),
-            prop = node.children[0],
-            val  = node.children[1];
-
-        map[this.dispatch(prop)] = this.dispatch(val);
-
-        return map;
-    }
-
-    walk_word_node(node) {
-        let type = node.nodeType();
-
-        return node.lexeme();
-    }
-}
-
-
+// a homogeneous AST node/tree
 class AST {
     constructor(token) {
         this.token      = token;    
@@ -182,8 +43,8 @@ class AnchorParser {
 
             return node;
         } else {
-            let inputTypeName     = tokenName(this.lookaheadToken.type),
-                expectedTypeName  = tokenName(expectedType);
+            let inputTypeName     = TokenTypes.tokenName(this.lookaheadToken.type),
+                expectedTypeName  = TokenTypes.tokenName(expectedType);
                 
             this.ast = null;
 
@@ -200,6 +61,7 @@ class AnchorParser {
         return this.ast; 
     }
 
+    // <fragments`> := <fragments><EOL>
     fragmentStart() {
         let ast;
 
@@ -210,6 +72,8 @@ class AnchorParser {
         return ast;
     }
 
+    // <fragments> := <fragment> | <fragment> '&' <fragments> 
+    // <fragments> := <fragment> ( '&' <fragments> )?
     fragments() {
         let singleContext;
 
@@ -230,6 +94,12 @@ class AnchorParser {
         return singleContext;
     }
 
+    // <fragment> := <independentPart> | <independentPart> ':' <dependentParts>
+    // <fragment> := <independentPart> ( ':' <dependentParts> )?
+    //
+    // <independentPart>    := <literal> '=' <literal>
+    //
+    // <literal>            := [a-zA-Z0-9]+
     fragment() {
         let assignNode, leftOperand, rightOperand;
 
@@ -249,8 +119,8 @@ class AnchorParser {
             colonNode.addChild(assignNode);
             colonNode.addChild(dependentSubtree);
 
-            // there is a dependent part, so the colon node(the separtator) 
-            // becomes the new local root, with the assignment subtree being
+            // there is a dependent part, so the colon node(the separator) 
+            // becomes the new local root, with the assignNode subtree becoming
             // it's left child.
             return colonNode;
         }
@@ -259,6 +129,12 @@ class AnchorParser {
         return assignNode;
     }
 
+    // <dependentParts> := <dependentPair> | <dependentPair> '|' <dependentParts>
+    // <dependentParts> := <dependentPair> ( '|' <dependentParts> )?
+    //
+    // <dependentPair>      := <literal> ',' <literal>
+    //
+    // <literal>            := [a-zA-Z0-9]+
     dependentParts() {
         let keyNode, valueNode, commaNode;
 
@@ -321,44 +197,4 @@ let prefixTraversal = (root) => {
     return buffer;
 }
 
-// testing
-let input   = 'chat=on:uid,suzie|color,green',
-    simpleFrag      = 'chat=on',
-    compoundFrag    = 'chat=on&profile=2', 
-    incomplete      = 'chat',
-    mixed           = 'chat=on:uid,suzie&profile=2',
-    complex         = 'chat=on&profile=2&debug=false',
-    mixedComplex    = 'chat=on:uid,suzie&profile=2&debug=false:priority,high',
-    singleFull      = 'chat=on:uid,suzie|color,green|ts,02101999',
-    lexer           = new AnchorLexxer(mixedComplex),
-    parser          = new AnchorParser(lexer),
-    compoundLexxer  = new AnchorLexxer(compoundFrag),
-    compoundParser  = new AnchorParser(compoundLexxer),
-    simpleLexxer    = new AnchorLexxer(simpleFrag),
-    simpleParser    = new AnchorParser(simpleLexxer),
-    singleLexxer    = new AnchorLexxer(singleFull),
-    singleParser    = new AnchorParser(singleLexxer),
-    complexLexxer   = new AnchorLexxer(mixedComplex),
-    complexParser   = new AnchorParser(complexLexxer),
-    walker;
-
-
-// parser.fragmentStart();
-// console.log('ast is:', parser.ast);
-// // console.log(parser.ast);
-// console.log(prefixTraversal(parser.ast));
-
-// singleParser.fragmentStart();
-// walker = new MapBuilderWalker(singleParser.asTree());
-
-// compoundParser.fragmentStart();
-// walker = new MapBuilderWalker(compoundParser.asTree());
-
-complexParser.fragmentStart();
-walker = new MapBuilderWalker(complexParser.asTree());
-walker.walk();
-
-console.log(walker.getMap());
-
-// console.log('compound parser', compoundParser.ast);
-// console.log(compoundParser.asTree().nodeType());
+export {AnchorParser};

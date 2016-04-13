@@ -1,45 +1,8 @@
-import _u from 'underscore';
 import * as TokenTypes from './anchor-token-types';
 
 
-let toList = (iterable) => {
-    let list = [];
-
-    for (let next of iterable) {
-        list.push(next); 
-    }
-
-    return list;
-}
-
-// let TokenEnum = {
-//     COLON       : 1,
-//     VERTBAR     : 2,
-//     COMMA       : 3,
-//     EQUALS      : 4,
-//     AMPERSAND   : 5, 
-//     WORD        : 6,
-//     EOL         : 7
-// };
-let TokenEnumMap = function() {
-    let tokenNames      = TokenTypes.tokenNames, 
-        tokenSymbols    = TokenTypes.tokenSymbols,
-        enumPairs       = _u.zip(tokenNames, tokenSymbols);
-
-    return new Map(enumPairs);
-}();
-
-
-let TokenNameMap = function() {
-    let tokenNames      = TokenTypes.tokenNames, 
-        tokenSymbols    = TokenTypes.tokenSymbols,
-        enumValues      = toList( TokenEnumMap.values() ),
-        enumNamePairs   = _u.zip(enumValues, tokenNames);
-
-    return new Map(enumNamePairs);
-}();
-
-
+// bare-bones representation of a token, an object literal with the type and 
+// its bounded lexeme content.
 let makeToken = (type, lexeme) => {
     let token = Object.create(null);
 
@@ -48,20 +11,6 @@ let makeToken = (type, lexeme) => {
 
     return token;
 };
-
-
-let tokenType = (tokenId) => {
-    let type = TokenEnumMap.get(tokenId);
-
-    return (type === undefined) ? null : type;
-}
-
-
-let tokenName = (tokenType) => {
-    let name = TokenNameMap.get(tokenType);
-
-    return (name === undefined) ? null : name;
-}
 
 
 class AnchorLexxer {
@@ -76,6 +25,10 @@ class AnchorLexxer {
         this.cursor += 1; 
     }
 
+    // note that the definition of a `word` is loose, it can start with a numeric
+    // value, so '7=some_rhs_value' is permissible and roughly translates to the
+    // entry {'7': 'some_rhs_value', ...} in key-value object map, and is valid
+    // in js.
     nextToken() {
         let lookAhead,
             token,
@@ -131,8 +84,7 @@ class AnchorLexxer {
 }
 
 
-export {TokenEnumMap, TokenNameMap, makeToken, tokenType, tokenName, AnchorLexxer};
-
+export {makeToken, AnchorLexxer};
 
 // testing
 // let input   = 'chat=profile:on:uid,green|other,yes',
@@ -141,9 +93,6 @@ export {TokenEnumMap, TokenNameMap, makeToken, tokenType, tokenName, AnchorLexxe
 // let t = lexxer.nextToken();
 
 // while (t.type !== TokenTypes.EOL) {
-//     console.log('type is:', TokenNameMap.get(t.type));
+//     console.log('type is:', TokenTypes.tokenName(t.type));
 //     t = lexxer.nextToken()
 // }
-
-// console.log('type is:', TokenNameMap[t.type]);
-// console.log('name of type `COLON` is:', tokenName(TokenEnum.COLON));

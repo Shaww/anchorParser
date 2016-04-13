@@ -1,7 +1,8 @@
-Lexer and parser to recognize a simple URL anchor fragment language.
+Lexer and parser to recognize a simple URL anchor fragment language based on 
+grammar found in the jQuery plugin: https://github.com/mmikowski/urianchor.
 
 Example of anchor fragment:
-    '#chat=on:uid,suzie|status,green'
+    'chat=on:uid,suzie|status,green'
 
         expands out to the following
 
@@ -13,7 +14,7 @@ Example of anchor fragment:
         }
     }
 
-    '#chat=on&profile=2'
+    'chat=on&profile=2'
 
         expands to
 
@@ -23,7 +24,7 @@ Example of anchor fragment:
     }
 
 
-There is a concept of a independent key and its dependent context.
+The following is the grammar. It can be parsed using an LL(1) parser.
 
 <fragments`>        := <fragments><EOL>
 <fragments>         := <fragment> | <fragment> '&' <fragments> 
@@ -33,17 +34,3 @@ There is a concept of a independent key and its dependent context.
 <dependentPair>     := <literal> ',' <literal>
 <literal>           := [a-zA-Z0-9]+
 <EOL>               := '\0'
-
-
-Some types that can be seen include the punctuations: 
-    ':'(for both the independent key/value split and to signalling beginning of 
-       dependent part). 
-
-    '|'(key/value separator found in the dependent part).
-
-    ','(key value separator for the dependent pairs).
-
-    '#!'(signalling the end of the fragment).
-
-
-literal matching can be done with regex. /[a-zA-Z0-9]+/ sufficient? 
