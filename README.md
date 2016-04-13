@@ -1,7 +1,8 @@
 Lexer and parser to recognize a simple URL anchor fragment language based on 
 grammar found in the jQuery plugin: https://github.com/mmikowski/urianchor.
 
-Example of anchor fragment:
+    Example of anchor fragment:
+
     'chat=on:uid,suzie|status,green'
 
         expands out to the following
@@ -26,11 +27,11 @@ Example of anchor fragment:
 
 The following is the grammar. It can be parsed using an LL(1) parser.
 
-<fragments`>        := <fragments><EOL>
-<fragments>         := <fragment> | <fragment> '&' <fragments> 
-<fragment>          := <independentPart> | <independentPart> ':' <dependentParts>
-<independentPart>   := <literal> '=' <literal>
-<dependentParts>    := <dependentPair> | <dependentPair> '|' <dependentParts>
-<dependentPair>     := <literal> ',' <literal>
-<literal>           := [a-zA-Z0-9]+
-<EOL>               := '\0'
+    <fragments`>        := <fragments><EOL>
+    <fragments>         := <fragment> | <fragment> '&' <fragments> 
+    <fragment>          := <independentPart> | <independentPart> ':' <dependentParts>
+    <independentPart>   := <literal> '=' <literal>
+    <dependentParts>    := <dependentPair> | <dependentPair> '|' <dependentParts>
+    <dependentPair>     := <literal> ',' <literal>
+    <literal>           := [a-zA-Z0-9]+
+    <EOL>               := '\0'
