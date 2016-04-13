@@ -1,6 +1,10 @@
-import {AnchorParser} from './anchor-parser';
-import {AnchorLexxer} from './anchor-lexxer';
+import {AnchorFactory} from './anchor-factory';
 import {MapBuilderWalker} from './map-builder-walker';
+
+let factory      = new AnchorFactory(),  
+    AnchorParser = factory.createParser(),
+    AnchorLexxer = factory.createLexer();
+   
 
 
 // testing
@@ -21,7 +25,6 @@ let input   = 'chat=on:uid,suzie|color,green',
     complexLexxer   = new AnchorLexxer(mixedComplex),
     complexParser   = new AnchorParser(complexLexxer),
     walker;
-
 
 singleParser.fragmentStart();
 walker = new MapBuilderWalker(singleParser.asTree());

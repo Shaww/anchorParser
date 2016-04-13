@@ -1,21 +1,21 @@
 {
   "name": "grunt-base",
-  "version": "1.0.0",
-  "description": "Repo for setting up a Grunt-based build-first work flow.",
-  "main": "Gruntfile.js",
+  "version": "0.0.1",
+  "description": "Lexer and Parser for simple language describing URL hash fragments",
+  "main": "build/anchor-factory.js",
   "scripts": {
     "build": "babel src -d build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shaww/grunt-base.git"
+    "url": "git+https://github.com/shaww/urlAnchor.git"
   },
-  "author": "",
+  "author": "Shaw W Chu",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/shaww/grunt-base/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/shaww/grunt-base#readme",
+  "homepage": "",
   "devDependencies": {
     "babel-cli": "^6.6.5",
     "babel-plugin-transform-runtime": "^6.7.5",
