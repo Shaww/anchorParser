@@ -1,5 +1,5 @@
 {
-  "name": "grunt-base",
+  "name": "anchor-parser",
   "version": "0.0.1",
   "description": "Lexer and Parser for simple language describing URL hash fragments",
   "main": "build/anchor-factory.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shaww/urlAnchor.git"
+    "url": "git+https://github.com/shaww/anchorParser.git"
   },
   "author": "Shaw W Chu",
   "license": "ISC",

@@ -1,11 +1,11 @@
 Lexer and parser to recognize a simple URL anchor fragment language based on 
 grammar found in the jQuery plugin: https://github.com/mmikowski/urianchor.
 
-    Example of anchor fragment:
+    Example of anchor fragments:
 
     'chat=on:uid,suzie|status,green'
-
-        expands out to the following
+        
+        could be interpreted as....
 
     map = {
         chat        : 'on',
@@ -17,7 +17,7 @@ grammar found in the jQuery plugin: https://github.com/mmikowski/urianchor.
 
     'chat=on&profile=2'
 
-        expands to
+        could be interpreted as....
 
     map = {
         chat    : 'on',
