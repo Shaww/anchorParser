@@ -1,6 +1,9 @@
 # our transpiled files
 build/
 
+# our distribution files
+lib/
+
 # temp. store
 temp/
 
