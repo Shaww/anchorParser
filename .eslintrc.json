@@ -1,6 +1,12 @@
 {
-    "parserOptions":{
-        "ecmaVersion": 6,
-        "sourceType": "module"
-    }
+    "rules": {
+        "indent": [2, 2, { "VariableDeclarator": 2, "SwitchCase": 1}],
+        "padded-blocks": [2, { "blocks": "never",  "classes": "never" }],
+        "no-multiple-empty-lines": [2, { "max": 2 }],
+        "key-spacing": [2, { "beforeColon": true, "afterColon": true,  "align": "colon", "mode": "minimum" }],
+        "no-multi-spaces": 0,
+        "no-multiple-empty-lines": [2, { "max": 2 }]
+    },
+
+    "extends": "standard"
 }
