@@ -1,36 +1,36 @@
-import {AnchorParser} from './anchor-parser';
-import {AnchorLexxer} from './anchor-lexxer';
-import * as TokenTypes from './anchor-token-types';
+import {AnchorParser} from './anchor-parser'
+import {AnchorLexxer} from './anchor-lexxer'
+import * as TokenTypes from './anchor-token-types'
 
 
 let createAnchorLexer = () => {
-    return AnchorLexxer;
+  return AnchorLexxer
 }
 
 
 let createAnchorParser = () => {
-    return AnchorParser;
+  return AnchorParser
 }
 
 
 let getTokenTypes = () => {
-  return TokenTypes;
+  return TokenTypes
 }
 
 
 class AnchorFactory {
-    createLexer() {
-        return createAnchorLexer(); 
-    }
+  createLexer () {
+    return createAnchorLexer()
+  }
 
-    createParser() {
-        return createAnchorParser(); 
-    }
+  createParser () {
+    return createAnchorParser()
+  }
 
-    getTypes() {
-        return getTokenTypes();
-    }
-};
+  getTypes () {
+    return getTokenTypes()
+  }
+}
 
 
-export {AnchorFactory};  
+export {AnchorFactory}
