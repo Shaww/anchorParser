@@ -3,36 +3,45 @@ module.exports = function(grunt) {
         clean: {
             default: {
                 files: {
-                    src: 'build/**/*' 
+                    src : ['build/**/*', 'lib/**/*']
                 }
             } 
         },
 
         eslint: {
             es2015: {
-                src: 'src/**/*.js' 
+                src : 'src/**/*.js' 
             } 
         },
 
         babel: {
             options: {
-                sourceMap: true
+                sourceMap : true
             },
 
             normal: {
-                files: [{
-                    expand: true,
-                    cwd: 'src',
-                    src: '**/*.js',
-                    dest: 'build/'
-                }] 
+                files: [ {
+                    expand  : true,
+                    cwd     : 'src',
+                    src     : '**/*.js',
+                    dest    : 'build/'
+                } ] 
             }
+        },
+
+        copy: {
+          default: {
+            expand  : true,
+            cwd     : 'build/',
+            src     : '**/*.js',
+            dest    : 'lib/'
+          }
         },
 
         watch: {
             source: {
-                files: ['src/**/*.js'],
-                tasks: ['clean', 'eslint', 'babel']
+                files : ['src/**/*.js'],
+                tasks : ['clean', 'eslint', 'babel', 'copy']
             } 
         }
 
@@ -42,6 +51,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('gruntify-eslint');
     grunt.loadNpmTasks('grunt-babel');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('default', ['watch']);
 };
