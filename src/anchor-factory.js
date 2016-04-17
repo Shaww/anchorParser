@@ -13,6 +13,11 @@ let createAnchorParser = () => {
 }
 
 
+let getTokenTypes = () => {
+  return TokenTypes;
+}
+
+
 class AnchorFactory {
     createLexer() {
         return createAnchorLexer(); 
@@ -22,10 +27,10 @@ class AnchorFactory {
         return createAnchorParser(); 
     }
 
-    getTokenTypes() {
-        return TokenTypes;
+    getTypes() {
+        return getTokenTypes();
     }
 };
 
 
-export {AnchorFactory, createAnchorParser, createAnchorLexer};  
+export {AnchorFactory};  
